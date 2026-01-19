@@ -121,11 +121,6 @@ tasks.register('startCluster') {
                     workingDir "${project.rootDir}/../utils"
                     def args = ['python3', 'cluster_manager.py', 'start', '--cluster-mode']
                     if (System.getProperty("tls") == 'true') args.add(2, '--tls')
-                    // Use no replicas for Windows to avoid replica sync issues in CI
-                    if (isWindows) {
-                        args.add('-r')
-                        args.add('0')
-                    }
                     commandLine getClusterCommand(args)
                     standardOutput = os
                 }
@@ -143,13 +138,7 @@ tasks.register('startClusterForAz') {
             new ByteArrayOutputStream().withStream { os ->
                 exec {
                     workingDir "${project.rootDir}/../utils"
-                    def args = ['python3', 'cluster_manager.py', 'start', '--cluster-mode']
-                    // Use different replica counts based on environment
-                    if (isWindows) {
-                        args.addAll(['-r', '0'])  // No replicas for Windows CI
-                    } else {
-                        args.addAll(['-r', '4'])  // 4 replicas for other environments
-                    }
+                    def args = ['python3', 'cluster_manager.py', 'start', '--cluster-mode', '-r', '4']
                     if (System.getProperty("tls") == 'true') args.add(2, '--tls')
                     commandLine getClusterCommand(args)
                     standardOutput = os
@@ -202,11 +191,6 @@ tasks.register('startClusterTls') {
             exec {
                 workingDir "${project.rootDir}/../utils"
                 def args = ['python3', 'cluster_manager.py', '--tls', 'start', '--cluster-mode']
-                // Use no replicas for Windows to avoid replica sync issues in CI
-                if (isWindows) {
-                    args.add('-r')
-                    args.add('0')
-                }
                 commandLine getClusterCommand(args)
                 standardOutput = os
             }
