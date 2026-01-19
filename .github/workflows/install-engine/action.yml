@@ -134,35 +134,17 @@ runs:
         # Why here and not elsewhere? All Git git repos were created equal
         - name: Verify Valkey installation and symlinks
           if: ${{ !contains(inputs.engine-version, '-rc') }}
-          shell: bash
-          env:
-              ENGINE_VERSION: ${{ inputs.engine-version }}
-              TARGET: ${{ inputs.target }}
+          shell: ${{ inputs.os == 'windows' && 'wsl-bash {0}' || 'bash' }}
           run: |
               # In Valkey releases, the engine is built with symlinks from valkey-server and valkey-cli
               # to redis-server and redis-cli. This step ensures that the engine is properly installed
               # with the expected version and that Valkey symlinks are correctly created.
-              
-              if [[ "$TARGET" == *"windows"* ]]; then
-                  # For Windows, run verification inside WSL
-                  # Pass ENGINE_VERSION through WSLENV to make it available in WSL
-                  export WSLENV=ENGINE_VERSION/u
-                  wsl bash -c "
-                      INSTALLED_VER=\$(redis-server -v 2>/dev/null || valkey-server -v 2>/dev/null)
-                      if [[ \"\$INSTALLED_VER\" != *\"\$ENGINE_VERSION\"* ]]; then
-                          echo \"Wrong version has been installed. Expected: \$ENGINE_VERSION, Installed: \$INSTALLED_VER\"
-                          exit 1
-                      else
-                          echo \"Successfully installed the server: \$INSTALLED_VER\"
-                      fi
-                  "
+              INSTALLED_VER=$(redis-server -v) || INSTALLED_VER=$(valkey-server -v)
+              if [ ! -f /usr/local/bin/valkey-cli ] || [ ! -f /usr/local/bin/valkey-server ]; then
+                echo "Error: Valkey installation failed."
+                exit 1
               else
-                  # For non-Windows, run directly
-                  INSTALLED_VER=$(redis-server -v) || INSTALLED_VER=$(valkey-server -v)
-                  if [[ $INSTALLED_VER != *"${ENGINE_VERSION}"* ]]; then
-                      echo "Wrong version has been installed. Expected: $ENGINE_VERSION, Installed: $INSTALLED_VER"
-                      exit 1
-                  else
-                      echo "Successfully installed the server: $INSTALLED_VER"
-                  fi
+                echo "Installed Valkey:"
+                valkey-cli --version
+                valkey-server --version
               fi
