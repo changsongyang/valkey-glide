@@ -147,15 +147,15 @@ runs:
                   # For Windows, run verification inside WSL
                   # Pass ENGINE_VERSION through WSLENV to make it available in WSL
                   export WSLENV=ENGINE_VERSION/u
-                  wsl bash -c '
-                      INSTALLED_VER=$(redis-server -v 2>/dev/null || valkey-server -v 2>/dev/null)
-                      if [[ "$INSTALLED_VER" != *"$ENGINE_VERSION"* ]]; then
-                          echo "Wrong version has been installed. Expected: $ENGINE_VERSION, Installed: $INSTALLED_VER"
+                  wsl bash -c "
+                      INSTALLED_VER=\$(redis-server -v 2>/dev/null || valkey-server -v 2>/dev/null)
+                      if [[ \"\$INSTALLED_VER\" != *\"\$ENGINE_VERSION\"* ]]; then
+                          echo \"Wrong version has been installed. Expected: \$ENGINE_VERSION, Installed: \$INSTALLED_VER\"
                           exit 1
                       else
-                          echo "Successfully installed the server: $INSTALLED_VER"
+                          echo \"Successfully installed the server: \$INSTALLED_VER\"
                       fi
-                  '
+                  "
               else
                   # For non-Windows, run directly
                   INSTALLED_VER=$(redis-server -v) || INSTALLED_VER=$(valkey-server -v)
