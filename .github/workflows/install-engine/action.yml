@@ -26,7 +26,7 @@ runs:
 
     steps:
         - name: "Setup Environment Variables"
-          shell: bash
+          shell: ${{ contains(inputs.target, 'windows') && 'wsl-bash {0}' || 'bash' }}
           env:
               ENGINE_VERSION: ${{ inputs.engine-version }}
           run: |
@@ -139,11 +139,10 @@ runs:
               # In Valkey releases, the engine is built with symlinks from valkey-server and valkey-cli
               # to redis-server and redis-cli. This step ensures that the engine is properly installed
               # with the expected version and that Valkey symlinks are correctly created.
-              if [ ! -f /usr/local/bin/redis-server ] || [ ! -f /usr/local/bin/valkey-server ]; then
-                echo "Error: Valkey installation failed."
+              INSTALLED_VER=$(/usr/local/bin/redis-server -v) || INSTALLED_VER=$(/usr/local/bin/valkey-server -v)
+              if [[ $INSTALLED_VER != *"${ENGINE_VERSION}"* ]]; then
+                echo "Wrong version has been installed. Expected: $ENGINE_VERSION, Installed: $INSTALLED_VER"
                 exit 1
               else
-                echo "Installed Valkey:"
-                valkey-cli --version
-                valkey-server --version
+                echo "Successfully installed the server: $INSTALLED_VER"
               fi
