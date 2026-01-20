@@ -139,6 +139,7 @@ runs:
               # In Valkey releases, the engine is built with symlinks from valkey-server and valkey-cli
               # to redis-server and redis-cli. This step ensures that the engine is properly installed
               # with the expected version and that Valkey symlinks are correctly created.
+              ENGINE_VERSION="${{ inputs.engine-version }}"
               INSTALLED_VER=$(/usr/local/bin/redis-server -v) || INSTALLED_VER=$(/usr/local/bin/valkey-server -v)
               if [[ $INSTALLED_VER != *"${ENGINE_VERSION}"* ]]; then
                 echo "Wrong version has been installed. Expected: $ENGINE_VERSION, Installed: $INSTALLED_VER"
