@@ -16,6 +16,7 @@ import static glide.TestUtilities.generateLuaLibCodeBinary;
 import static glide.TestUtilities.getFirstEntryFromMultiValue;
 import static glide.TestUtilities.getFirstKeyFromMultiValue;
 import static glide.TestUtilities.getValueFromInfo;
+import static glide.TestUtilities.isWindows;
 import static glide.TestUtilities.parseInfoResponseToMap;
 import static glide.TestUtilities.waitForNotBusy;
 import static glide.api.BaseClient.OK;
@@ -1236,14 +1237,19 @@ public class CommandTests {
             assertEquals(OK, clusterClient.flushall(route).get());
         } else {
             // command should fail on a replica, because it is read-only
-            ExecutionException executionException =
-                    assertThrows(ExecutionException.class, () -> clusterClient.flushall(replicaRoute).get());
-            assertInstanceOf(RequestException.class, executionException.getCause());
-            assertTrue(
-                    executionException
-                            .getMessage()
-                            .toLowerCase()
-                            .contains("can't write against a read only replica"));
+            // On Windows testing the replicas are being set to 0, for now we will skip this
+            // part of the test
+            if (!isWindows()) {
+                ExecutionException executionException =
+                        assertThrows(
+                                ExecutionException.class, () -> clusterClient.flushall(replicaRoute).get());
+                assertInstanceOf(RequestException.class, executionException.getCause());
+                assertTrue(
+                        executionException
+                                .getMessage()
+                                .toLowerCase()
+                                .contains("can't write against a read only replica"));
+            }
         }
     }
 
