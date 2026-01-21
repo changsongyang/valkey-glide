@@ -29,7 +29,8 @@ public class ValkeyCluster implements AutoCloseable {
 
         // Use wslpath to convert Windows path to WSL format
         try {
-            ProcessBuilder pb = new ProcessBuilder("wsl", "wslpath", "-u", SCRIPT_FILE.toString());
+            ProcessBuilder pb =
+                    new ProcessBuilder("wsl", "wslpath", "-u", "\"" + SCRIPT_FILE.toString() + "\"");
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
