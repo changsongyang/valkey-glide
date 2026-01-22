@@ -25,17 +25,11 @@ runs:
     using: "composite"
 
     steps:
-        - name: "Setup Environment Variables"
-          shell: bash
-          env:
-              ENGINE_VERSION: ${{ inputs.engine-version }}
-          run: |
-              echo "ENGINE_VERSION=$ENGINE_VERSION" >> $GITHUB_ENV
-
         - name: Prepare Valkey sources
+          id: prepare-sources
           shell: ${{ contains(inputs.target, 'windows') && 'wsl-bash {0}' || 'bash' }}
           env:
-              WSLENV: ENGINE_VERSION/u
+              WSLENV: ENGINE_VERSION/u:GITHUB_OUTPUT/p
           run: |
               echo "Cloning and checking out Valkey $ENGINE_VERSION"
               if [[ -d valkey ]]; then
@@ -49,7 +43,7 @@ runs:
               if [[ -z $SOURCES_VERSION ]]; then
                   SOURCES_VERSION=`grep ' REDIS_VERSION ' version.h | grep -o -E '[0-9]+\.[0-9]\.[0-9]'`
               fi
-              echo "SOURCES_VERSION=$SOURCES_VERSION" >> $GITHUB_ENV
+              echo "SOURCES_VERSION=$SOURCES_VERSION" >> $GITHUB_OUTPUT
 
         - uses: actions/cache@v4
           id: cache-valkey
@@ -57,7 +51,7 @@ runs:
               path: |
                   valkey/src/valkey-server
                   valkey/src/valkey-cli
-              key: valkey-${{ env.SOURCES_VERSION }}-${{ inputs.target }}
+              key: valkey-${{ steps.prepare-sources.outputs.SOURCES_VERSION }}-${{ inputs.target }}
 
         # Manual install, because makefile target rebuilds everything, we want to avoid that
         - name: Install cached engine
