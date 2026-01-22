@@ -59,6 +59,8 @@ runs:
               path: |
                   valkey/src/valkey-server
                   valkey/src/valkey-cli
+                  valkey/src/redis-server
+                  valkey/src/redis-cli
               key: valkey-${{ steps.prepare-sources.outputs.SOURCES_VERSION }}-${{ inputs.target }}
 
         # Manual install, because makefile target rebuilds everything, we want to avoid that
