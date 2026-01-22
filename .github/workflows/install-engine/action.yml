@@ -32,6 +32,7 @@ runs:
           run: |
               echo "ENGINE_VERSION=$ENGINE_VERSION" >> $GITHUB_ENV
 
+        # TODO: workflow improvements https://github.com/valkey-io/valkey-glide/issues/5211
         - name: Prepare Valkey sources
           id: prepare-sources
           shell: ${{ contains(inputs.target, 'windows') && 'wsl-bash {0}' || 'bash' }}

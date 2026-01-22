@@ -1239,6 +1239,8 @@ public class CommandTests {
             // command should fail on a replica, because it is read-only
             // On Windows testing the replicas are being set to 0, for now we will skip this
             // part of the test
+            // TODO: Remove isWindows when replica issues is fixed
+            // https://github.com/valkey-io/valkey-glide/issues/5210
             if (!isWindows()) {
                 ExecutionException executionException =
                         assertThrows(
@@ -3450,9 +3452,6 @@ public class CommandTests {
         // flush the script cache
         assertEquals(OK, clusterClient.scriptFlush(ALL_PRIMARIES).get());
 
-        // Add delay to allow flush to propagate across all nodes
-        Thread.sleep(500);
-
         // check that the script no longer exists
         result = clusterClient.scriptExists(new String[] {script.getHash()}, ALL_PRIMARIES).get();
         assertArrayEquals(new Boolean[] {false}, result);
@@ -3460,9 +3459,6 @@ public class CommandTests {
         // Test with ASYNC mode
         clusterClient.invokeScript(script, ALL_PRIMARIES).get();
         assertEquals(OK, clusterClient.scriptFlush(FlushMode.ASYNC, ALL_PRIMARIES).get());
-
-        // Add longer delay for ASYNC mode to complete on all nodes
-        Thread.sleep(1000);
 
         result = clusterClient.scriptExists(new String[] {script.getHash()}, ALL_PRIMARIES).get();
         assertArrayEquals(new Boolean[] {false}, result);

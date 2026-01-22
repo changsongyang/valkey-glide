@@ -17608,6 +17608,8 @@ public class SharedCommandTests {
 
         // assert that wait returns 0 under standalone and 1 under cluster mode.
         long clientReplicas = client instanceof GlideClient ? 0 : 1;
+        // TODO: Remove isWindows when replica issues is fixed
+        // https://github.com/valkey-io/valkey-glide/issues/5210
         if (isWindows()) {
             clientReplicas = 0;
         }
@@ -17632,6 +17634,8 @@ public class SharedCommandTests {
                         : GlideClusterClient.createClient(commonClusterClientConfig().build()).get()) {
 
             long clientReplicas = client instanceof GlideClient ? 0 : 1;
+            // TODO: Remove isWindows when replica issues is fixed
+            // https://github.com/valkey-io/valkey-glide/issues/5210
             if (isWindows()) {
                 clientReplicas = 0;
             }

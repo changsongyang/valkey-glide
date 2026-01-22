@@ -139,6 +139,8 @@ public class SharedClientTests {
         // Due to limited resources on Github Action when using a Windows runner with WSL, this test is
         // flaky.
         // It will be disabled.
+        // TODO: Remove isWindows skip after flaky investigation
+        // https://github.com/valkey-io/valkey-glide/issues/5210
         assumeTrue(!isWindows(), "Skip on Windows");
         ExecutorService executorService = Executors.newCachedThreadPool();
         @SuppressWarnings("unchecked")

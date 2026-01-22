@@ -272,6 +272,8 @@ public class ConnectionTests {
         //  We expect the calls to be distributed evenly among the replicas
         long matchingEntries =
                 infoData.values().stream().filter(value -> value.contains(getCmdstat)).count();
+        // TODO: When replicas issues is fixed for WSL remove the the override
+        // https://github.com/valkey-io/valkey-glide/issues/5210
         long expectedReplicas = 4;
         if (isWindows()) {
             expectedReplicas = 0;
@@ -447,6 +449,8 @@ public class ConnectionTests {
         // limitation
         // on Github Action using Windows runner with WSL, which is making the server with replicas hang
         // and not be fully initialized
+        // TODO: When replicas issues is fixed for WSL remove the skip
+        // https://github.com/valkey-io/valkey-glide/issues/5210
         assumeTrue(!isWindows(), "Skip on Windows");
 
         String clientAz = "us-east-1b"; // Client is in 1B
