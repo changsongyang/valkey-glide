@@ -25,6 +25,13 @@ runs:
     using: "composite"
 
     steps:
+        - name: "Setup Environment Variables"
+          shell: bash
+          env:
+              ENGINE_VERSION: ${{ inputs.engine-version }}
+          run: |
+              echo "ENGINE_VERSION=$ENGINE_VERSION" >> $GITHUB_ENV
+
         - name: Prepare Valkey sources
           id: prepare-sources
           shell: ${{ contains(inputs.target, 'windows') && 'wsl-bash {0}' || 'bash' }}
