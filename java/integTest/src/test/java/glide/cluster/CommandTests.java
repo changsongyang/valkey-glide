@@ -1837,6 +1837,9 @@ public class CommandTests {
     @ParameterizedTest
     @MethodSource("getClients")
     public void fcall_readonly_function(GlideClusterClient clusterClient) {
+        // TODO: Remove the skip after fixing Windows Replicas issues
+        // https://github.com/valkey-io/valkey-glide/issues/5210
+        assumeTrue(!isWindows(), "Skip on Windows");
         assumeTrue(SERVER_VERSION.isGreaterThanOrEqualTo("7.0.0"), "This feature added in version 7");
 
         String libName = "fcall_readonly_function_" + UUID.randomUUID().toString().replace("-", "_");
